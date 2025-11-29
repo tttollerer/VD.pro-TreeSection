@@ -20,16 +20,9 @@ body {
     padding: 20px 0;
 }
 
-/* Navigation Header */
+/* Navigation Header - Hidden, using parent-context breadcrumb instead */
 .tree-nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin: 0 40px 20px;
-    padding: 12px 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    display: none;
 }
 
 .nav-back {
@@ -248,20 +241,34 @@ body {
 
 /* Peek-left - on the left side */
 .tree-level.peek-left {
-    left: -35%;
-    opacity: 0.5;
-    transform: scale(0.92);
-    filter: blur(0);
+    left: -40%;
+    opacity: 1;
+    transform: scale(0.5);
     pointer-events: auto;
+    z-index: 1;
 }
 
 /* Peek-right - on the right side */
 .tree-level.peek-right {
-    left: 58%;
-    opacity: 0.5;
-    transform: scale(0.92);
-    filter: blur(0);
+    left: 60%;
+    opacity: 1;
+    transform: scale(0.5);
     pointer-events: auto;
+    z-index: 1;
+}
+
+/* Dim content inside peek levels, but NOT the overlay */
+.tree-level.peek-left .tree-trunk,
+.tree-level.peek-left .tree-node,
+.tree-level.peek-left .level-header,
+.tree-level.peek-left .level-label,
+.tree-level.peek-right .tree-trunk,
+.tree-level.peek-right .tree-node,
+.tree-level.peek-right .level-header,
+.tree-level.peek-right .level-label {
+    opacity: 0.5;
+    filter: blur(1px);
+    transition: all 0.3s ease;
 }
 
 /* Hidden levels */
@@ -305,15 +312,33 @@ body {
     right: 0;
     bottom: 0;
     display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.4);
-    opacity: 0;
+    background: transparent; /* Transparent background */
+    opacity: 1; /* Always visible if parent has peek class */
     pointer-events: none;
     transition: opacity 0.3s ease;
     z-index: 20;
     border-radius: 16px;
     cursor: pointer;
+    gap: 15px;
+}
+
+.peek-overlay-title {
+    color: #0ea5e9;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 12px 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-width: 90%;
+    pointer-events: auto;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: scale(2); /* Counter-scale to maintain full size at 50% parent */
 }
 
 /* Overlay nur bei peek-Levels anzeigen */
@@ -321,6 +346,7 @@ body {
 .tree-level.peek-right .peek-overlay {
     display: flex;
     pointer-events: auto;
+    opacity: 1; /* Full opacity for container */
 }
 
 .tree-level.peek-left:hover .peek-overlay,
@@ -335,16 +361,37 @@ body {
 }
 
 .peek-overlay i {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
     color: #0ea5e9;
     background: white;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    transition: transform 0.2s ease;
+    transform: scale(2); /* Counter-scale to maintain full size at 50% parent */
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+.peek-overlay:hover i {
+    transform: scale(2.2);
+}
+
+/* Specific icons via CSS based on parent class */
+.tree-level.peek-left .peek-overlay i::before {
+    content: "\f060"; /* fa-arrow-left */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.tree-level.peek-right .peek-overlay i::before {
+    content: "\f061"; /* fa-arrow-right */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
 }
 
 /* Level Header */

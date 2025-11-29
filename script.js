@@ -87,7 +87,7 @@ class FeatureTree {
 
             const overlay = document.createElement('div');
             overlay.className = 'peek-overlay';
-            overlay.innerHTML = '<i class="fas fa-hand-pointer"></i>';
+            overlay.innerHTML = '<i></i><div class="peek-overlay-title"></div>'; // Icon wird per CSS, Title per JS gesetzt
             level.appendChild(overlay);
 
             const label = document.createElement('div');
@@ -199,6 +199,7 @@ class FeatureTree {
             const childIndex = Array.from(this.levels).indexOf(childLevel);
             if (childIndex !== -1) {
                 this.previewChildIndex = childIndex;
+                this.previewLabel = node.querySelector('.node-headline')?.textContent || '';
                 this.updateLevelStates();
             }
         }
@@ -206,6 +207,7 @@ class FeatureTree {
 
     handleNodeHoverEnd(node) {
         this.previewChildIndex = null;
+        this.previewLabel = null;
         this.updateLevelStates();
     }
 
@@ -264,22 +266,39 @@ class FeatureTree {
     updateLevelStates() {
         // peek-left: das vorherige Level aus der History
         let peekLeftIndex = null;
+        let leftTitle = '';
+
         if (this.history.length > 0) {
-            peekLeftIndex = this.history[this.history.length - 1].levelIndex;
+            const historyItem = this.history[this.history.length - 1];
+            peekLeftIndex = historyItem.levelIndex;
+            leftTitle = historyItem.label || 'Zurück';
         }
 
         // peek-right: das Level über dessen Node wir hovern
         const peekRightIndex = this.previewChildIndex;
+        let rightTitle = '';
+        if (this.previewChildIndex !== null) {
+           // Find the node that triggered this preview
+           // We can get it from the currently hovered node? 
+           // Actually, previewChildIndex is set on hover.
+           // We need the label of the node we are hovering over.
+           // But updateLevelStates doesn't know about the hovered node directly.
+           // We can store the label in `this.previewLabel` similar to previewChildIndex.
+           rightTitle = this.previewLabel || 'Details';
+        }
 
         this.levels.forEach((level, index) => {
             level.classList.remove('active', 'peek-left', 'peek-right', 'hidden');
+            const titleEl = level.querySelector('.peek-overlay-title');
 
             if (index === this.currentLevelIndex) {
                 level.classList.add('active');
             } else if (index === peekLeftIndex) {
                 level.classList.add('peek-left');
+                if (titleEl) titleEl.textContent = leftTitle;
             } else if (index === peekRightIndex) {
                 level.classList.add('peek-right');
+                if (titleEl) titleEl.textContent = rightTitle;
             } else {
                 level.classList.add('hidden');
             }
