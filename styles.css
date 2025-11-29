@@ -373,13 +373,13 @@ body {
 }
 
 .tree-node.left {
-    margin-left: 10px;
+    margin-left: calc(15% + 10px);
     margin-right: auto;
 }
 
 .tree-node.right {
     margin-left: auto;
-    margin-right: 10px;
+    margin-right: calc(15% + 10px);
 }
 
 /* Verbindungslinien */
@@ -620,6 +620,14 @@ body {
 
     .tree-node {
         width: calc(42% - 25px);
+    }
+
+    .tree-node.left {
+        margin-left: calc(8% + 10px);
+    }
+
+    .tree-node.right {
+        margin-right: calc(8% + 10px);
     }
 
     .node-content {
