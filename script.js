@@ -108,43 +108,79 @@ class FeatureTree {
 
     updateParentContext() {
         const inner = this.parentContext.querySelector('.parent-context-inner');
+        inner.innerHTML = '';
 
-        if (this.history.length === 0) {
-            this.parentContext.classList.remove('visible');
-            return;
+        // 1. Root Context (Immer anzeigen)
+        const rootCard = document.createElement('div');
+        rootCard.className = 'parent-context-card root-card';
+        // Mark active if no history (we are at root)
+        if (this.history.length === 0) rootCard.classList.add('active-context');
+        
+        rootCard.innerHTML = `
+            <div class="parent-context-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="parent-context-text">
+                <span class="parent-context-label">Aktueller Kontext:</span>
+                <span class="parent-context-headline">Feature Übersicht</span>
+                <span class="parent-context-subheadline">Alle Vorteile auf einen Blick</span>
+            </div>
+            ${this.history.length > 0 ? `
+            <button class="parent-context-back">
+                <i class="fas fa-arrow-up"></i>
+                Top
+            </button>` : ''}
+        `;
+
+        if (this.history.length > 0) {
+            // Make the whole root card clickable to go back to root
+            rootCard.addEventListener('click', () => this.navigateToRoot());
+            rootCard.style.cursor = 'pointer';
+        } else {
+            rootCard.style.cursor = 'default';
         }
+        
+        inner.appendChild(rootCard);
 
-        // Get the last item from history (the parent we clicked)
-        const parentItem = this.history[this.history.length - 1];
-        const parentNode = document.querySelector(`.tree-node[data-id="${parentItem.nodeId}"]`);
+        // 2. History Contexts (Parent, Grandparent etc.)
+        this.history.forEach((item, index) => {
+            const parentNode = document.querySelector(`.tree-node[data-id="${item.nodeId}"]`);
+            if (!parentNode) return;
 
-        if (parentNode) {
             const icon = parentNode.querySelector('.node-icon i')?.className || 'fas fa-circle';
             const headline = parentNode.querySelector('.node-headline')?.textContent || '';
             const subheadline = parentNode.querySelector('.node-subheadline')?.textContent || '';
 
-            inner.innerHTML = `
-                <div class="parent-context-card">
-                    <div class="parent-context-icon">
-                        <i class="${icon}"></i>
-                    </div>
-                    <div class="parent-context-text">
-                        <span class="parent-context-label">Aktueller Kontext:</span>
-                        <span class="parent-context-headline">${headline}</span>
-                        <span class="parent-context-subheadline">${subheadline}</span>
-                    </div>
-                    <button class="parent-context-back">
-                        <i class="fas fa-arrow-left"></i>
-                        Zurück
-                    </button>
+            const card = document.createElement('div');
+            card.className = 'parent-context-card';
+            
+            // Removed manual positioning styles for breadcrumb layout
+            
+            card.innerHTML = `
+                <div class="parent-context-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="parent-context-text">
+                    <span class="parent-context-headline">${headline}</span>
+                    <span class="parent-context-subheadline">${subheadline}</span>
                 </div>
             `;
 
-            // Add click handler for back button
-            inner.querySelector('.parent-context-back').addEventListener('click', () => this.goBack());
+            // Click on card navigates to that level (exclusive, so we go TO this level, meaning its children become active)
+            // Wait, if I click "Workflow Automation" in the breadcrumb, do I want to see Workflow Automation's children?
+            // Yes. That is exactly state index 'index' in history?
+            // No, history[index] is the state where we ARE inside that node.
+            // Actually, if I am at Level 3, history has [Level 0 Choice, Level 1 Choice].
+            // If I click Level 0 Choice (index 0), I want to go to the state where Level 0 Choice is the active parent (Level 1).
+            // So target level index is item.levelIndex + 1? 
+            // Let's look at navigateToCrumb logic.
+            
+            card.addEventListener('click', () => this.navigateToCrumb(index));
 
-            this.parentContext.classList.add('visible');
-        }
+            inner.appendChild(card);
+        });
+
+        this.parentContext.classList.add('visible');
     }
 
     handleNodeHover(node) {

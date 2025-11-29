@@ -92,92 +92,117 @@ body {
 
 /* Parent Context Card - shows parent when in child levels */
 .parent-context {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.3s ease;
-    opacity: 0;
-    margin: 0 40px;
+    min-height: 120px;
+    margin: 0 40px 15px;
+    opacity: 1;
+    transition: all 0.3s ease;
 }
 
 .parent-context.visible {
-    max-height: 120px;
-    opacity: 1;
-    margin-bottom: 15px;
+    /* Removed toggling behavior, kept for compatibility if needed */
 }
 
 .parent-context-inner {
-    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .parent-context-card {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border-radius: 12px;
-    border: 2px solid #0ea5e9;
-    box-shadow: 0 2px 10px rgba(14, 165, 233, 0.15);
+    gap: 12px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Separator arrow between cards */
+.parent-context-card:not(:last-child)::after {
+    content: '›';
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1.2rem;
+    font-weight: 400;
+    pointer-events: none;
+}
+
+/* Remove margin-right to compensate for gap in flex container, gap handles spacing */
+
+.parent-context-card.root-card {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    box-shadow: none;
 }
 
 .parent-context-icon {
     flex-shrink: 0;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    border-radius: 10px;
+    border-radius: 8px;
     color: white;
-    font-size: 1rem;
+    font-size: 0.85rem;
 }
 
 .parent-context-text {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
+    min-width: 100px;
 }
 
 .parent-context-label {
-    font-size: 0.7rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: none; /* Hide label for compact breadcrumb view */
 }
 
 .parent-context-headline {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #1e293b;
 }
 
 .parent-context-subheadline {
-    font-size: 0.8rem;
-    color: #0ea5e9;
-    font-weight: 500;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 400;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .parent-context-back {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    color: #64748b;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    display: none; /* Hide back buttons in breadcrumb view, make whole card clickable if needed or rely on tree nav */
 }
 
-.parent-context-back:hover {
-    background: #f1f5f9;
-    color: #334155;
-    border-color: #cbd5e1;
+/* Make cards clickable to navigate back */
+.parent-context-card {
+    cursor: pointer;
+}
+
+.parent-context-card:hover {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+}
+
+.parent-context-card.root-card:hover {
+    background: #e2e8f0;
 }
 
 /* Tree Viewport */
@@ -198,19 +223,22 @@ body {
 /* Tree Levels - absolute positioning for correct placement */
 .tree-level {
     position: absolute;
-    width: 60%;
+    width: 80%;
     top: 0;
-    padding: 20px 15px;
+    padding: 20px 0;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
     transform: scale(0.88);
     filter: blur(3px);
     pointer-events: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0;
 }
 
 /* Active level - centered */
 .tree-level.active {
-    left: 20%;
+    left: 10%;
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
@@ -365,21 +393,29 @@ body {
 /* Tree Nodes - SCHMALER */
 .tree-node {
     position: relative;
-    width: calc(35% - 30px);
+    width: auto;
+    max-width: 450px;
+    min-width: 350px;
     margin-bottom: 12px;
     z-index: 2;
     opacity: 1;
     transform: translateY(0);
+    align-self: start;
 }
 
 .tree-node.left {
-    margin-left: calc(15% - 5px);
-    margin-right: auto;
+    grid-column: 1;
+    justify-self: end;
+    margin-left: 0;
+    margin-right: 35px;
 }
 
 .tree-node.right {
-    margin-left: auto;
-    margin-right: calc(15% - 5px);
+    grid-column: 2;
+    justify-self: start;
+    margin-left: 35px;
+    margin-right: 0;
+    margin-top: 50px;
 }
 
 /* Verbindungslinien */
@@ -618,18 +654,6 @@ body {
         left: 52%;
     }
 
-    .tree-node {
-        width: calc(42% - 25px);
-    }
-
-    .tree-node.left {
-        margin-left: calc(8% - 5px);
-    }
-
-    .tree-node.right {
-        margin-right: calc(8% - 5px);
-    }
-
     .node-content {
         padding: 14px;
         gap: 10px;
@@ -662,6 +686,7 @@ body {
 @media (max-width: 700px) {
     .tree-level {
         width: 94%;
+        display: block;
     }
 
     .tree-level.active {
@@ -686,8 +711,11 @@ body {
     .tree-node.left,
     .tree-node.right {
         width: 100%;
+        max-width: none;
+        min-width: 0;
         margin-left: 0;
         margin-right: 0;
+        margin-top: 0;
         margin-bottom: 10px;
     }
 
@@ -707,14 +735,18 @@ body {
         margin: 0 15px;
     }
 
-    .parent-context-card {
-        flex-wrap: wrap;
+    .parent-context-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
     }
 
-    .parent-context-back {
+    .parent-context-card:not(:last-child)::after {
+        display: none;
+    }
+    
+    .parent-context-card {
         width: 100%;
-        justify-content: center;
-        margin-top: 5px;
     }
 }
 
