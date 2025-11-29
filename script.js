@@ -14,6 +14,9 @@ class FeatureTree {
         this.currentLevelIndex = 0;
         this.history = [];
 
+        // Für peek-right: welches Child-Level soll gezeigt werden
+        this.previewChildIndex = null;
+
         // Level-Breite für Slide-Berechnung
         this.levelWidth = 60;
 
@@ -27,13 +30,23 @@ class FeatureTree {
         // Zeige erstes Level
         this.showLevel(0);
 
-        // Event-Listener für Node-Klicks (mit Capture für bessere Kontrolle)
+        // Event-Listener für Node-Klicks
         document.querySelectorAll('.tree-node').forEach(node => {
             const content = node.querySelector('.node-content');
             if (content) {
+                // Klick-Handler
                 content.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.handleNodeClick(e, node);
+                });
+
+                // Hover-Handler für Peek-Vorschau
+                content.addEventListener('mouseenter', () => {
+                    this.handleNodeHover(node);
+                });
+
+                content.addEventListener('mouseleave', () => {
+                    this.handleNodeHoverEnd(node);
                 });
             }
         });
@@ -45,8 +58,6 @@ class FeatureTree {
                 const level = overlay.closest('.tree-level');
                 if (level.classList.contains('peek-left')) {
                     this.goBack();
-                } else if (level.classList.contains('peek-right')) {
-                    // Rechts-Klick wird durch Node-Klick gehandhabt
                 }
             });
         });
@@ -70,13 +81,11 @@ class FeatureTree {
 
     addPeekOverlays() {
         this.levels.forEach(level => {
-            // Overlay für Peek-Ansicht (nur sichtbar bei peek-left/peek-right)
             const overlay = document.createElement('div');
             overlay.className = 'peek-overlay';
             overlay.innerHTML = '<i class="fas fa-hand-pointer"></i>';
             level.appendChild(overlay);
 
-            // Label für Level-Typ
             const label = document.createElement('div');
             label.className = 'level-label';
             const levelNum = level.dataset.level;
@@ -87,14 +96,33 @@ class FeatureTree {
         });
     }
 
+    handleNodeHover(node) {
+        const parentLevel = node.closest('.tree-level');
+        if (!parentLevel || !parentLevel.classList.contains('active')) return;
+        if (node.classList.contains('leaf')) return;
+
+        const nodeId = node.dataset.id;
+        const childLevel = this.findChildLevel(nodeId);
+
+        if (childLevel) {
+            const childIndex = Array.from(this.levels).indexOf(childLevel);
+            this.previewChildIndex = childIndex;
+            this.updateLevelStates();
+        }
+    }
+
+    handleNodeHoverEnd(node) {
+        // Reset preview wenn nicht mehr über einem Node
+        this.previewChildIndex = null;
+        this.updateLevelStates();
+    }
+
     handleNodeClick(event, node) {
-        // Prüfen ob wir im aktiven Level sind
         const parentLevel = node.closest('.tree-level');
         if (!parentLevel || !parentLevel.classList.contains('active')) {
             return;
         }
 
-        // Wenn Leaf-Node, nur visuelles Feedback
         if (node.classList.contains('leaf')) {
             this.animateLeafClick(node);
             return;
@@ -102,29 +130,21 @@ class FeatureTree {
 
         const nodeId = node.dataset.id;
         const nodeLabel = node.querySelector('.node-headline')?.textContent || '';
-
-        // Finde das passende Child-Level
         const childLevel = this.findChildLevel(nodeId);
 
         if (childLevel) {
-            // Markiere ausgewählten Node
             this.clearSelection();
             node.classList.add('selected');
 
-            // Speichere aktuelle Position in History
             this.history.push({
                 levelIndex: this.currentLevelIndex,
                 nodeId: nodeId,
                 label: nodeLabel
             });
 
-            // Finde Index des Child-Levels
             const childIndex = Array.from(this.levels).indexOf(childLevel);
-
-            // Navigiere zum Child-Level
+            this.previewChildIndex = null; // Reset preview
             this.navigateToLevel(childIndex);
-
-            // Update Breadcrumb
             this.updateBreadcrumb();
         }
     }
@@ -153,14 +173,23 @@ class FeatureTree {
     }
 
     updateLevelStates() {
+        // Finde das peek-left Level (vorheriges aus History)
+        let peekLeftIndex = null;
+        if (this.history.length > 0) {
+            peekLeftIndex = this.history[this.history.length - 1].levelIndex;
+        }
+
+        // peek-right ist nur das Level, über dessen Node wir gerade hovern
+        const peekRightIndex = this.previewChildIndex;
+
         this.levels.forEach((level, index) => {
             level.classList.remove('active', 'peek-left', 'peek-right', 'hidden');
 
             if (index === this.currentLevelIndex) {
                 level.classList.add('active');
-            } else if (this.isAdjacentLevel(index, 'left')) {
+            } else if (index === peekLeftIndex) {
                 level.classList.add('peek-left');
-            } else if (this.isAdjacentLevel(index, 'right')) {
+            } else if (index === peekRightIndex) {
                 level.classList.add('peek-right');
             } else {
                 level.classList.add('hidden');
@@ -168,35 +197,11 @@ class FeatureTree {
         });
     }
 
-    isAdjacentLevel(levelIndex, direction) {
-        const currentLevel = this.levels[this.currentLevelIndex];
-        const targetLevel = this.levels[levelIndex];
-
-        if (!currentLevel || !targetLevel) return false;
-
-        if (direction === 'left') {
-            if (this.history.length === 0) return false;
-            const previousHistoryItem = this.history[this.history.length - 1];
-            return levelIndex === previousHistoryItem.levelIndex;
-        }
-
-        if (direction === 'right') {
-            const currentNodes = currentLevel.querySelectorAll('.tree-node:not(.leaf)');
-            for (const node of currentNodes) {
-                const childLevel = this.findChildLevel(node.dataset.id);
-                if (childLevel && Array.from(this.levels).indexOf(childLevel) === levelIndex) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     goBack() {
         if (this.history.length === 0) return;
 
         const previous = this.history.pop();
+        this.previewChildIndex = null;
         this.navigateToLevel(previous.levelIndex);
         this.clearSelection();
         this.updateBreadcrumb();
@@ -239,6 +244,7 @@ class FeatureTree {
     navigateToRoot() {
         if (this.history.length === 0) return;
         this.history = [];
+        this.previewChildIndex = null;
         this.navigateToLevel(0);
         this.clearSelection();
         this.updateBreadcrumb();
@@ -253,6 +259,7 @@ class FeatureTree {
         const targetIndex = childLevel ? Array.from(this.levels).indexOf(childLevel) : 0;
 
         this.history = targetHistory;
+        this.previewChildIndex = null;
         this.navigateToLevel(targetIndex);
         this.clearSelection();
         this.updateBreadcrumb();
