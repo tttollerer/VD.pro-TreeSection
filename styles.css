@@ -229,7 +229,7 @@ body {
 
 /* Peek-right - on the right side */
 .tree-level.peek-right {
-    left: 75%;
+    left: 58%;
     opacity: 0.5;
     transform: scale(0.92);
     filter: blur(0);
@@ -373,13 +373,13 @@ body {
 }
 
 .tree-node.left {
-    margin-left: calc(15% + 10px);
+    margin-left: calc(15% - 5px);
     margin-right: auto;
 }
 
 .tree-node.right {
     margin-left: auto;
-    margin-right: calc(15% + 10px);
+    margin-right: calc(15% - 5px);
 }
 
 /* Verbindungslinien */
@@ -597,7 +597,7 @@ body {
     }
 
     .tree-level.peek-right {
-        left: 70%;
+        left: 55%;
     }
 }
 
@@ -615,7 +615,7 @@ body {
     }
 
     .tree-level.peek-right {
-        left: 65%;
+        left: 52%;
     }
 
     .tree-node {
@@ -623,11 +623,11 @@ body {
     }
 
     .tree-node.left {
-        margin-left: calc(8% + 10px);
+        margin-left: calc(8% - 5px);
     }
 
     .tree-node.right {
-        margin-right: calc(8% + 10px);
+        margin-right: calc(8% - 5px);
     }
 
     .node-content {
