@@ -17,9 +17,6 @@ class FeatureTree {
         // Für peek-right: welches Child-Level soll gezeigt werden
         this.previewChildIndex = null;
 
-        // Level-Breite für Slide-Berechnung
-        this.levelWidth = 60;
-
         this.init();
     }
 
@@ -101,6 +98,53 @@ class FeatureTree {
             else if (levelNum === '3') label.textContent = 'Details';
             level.appendChild(label);
         });
+
+        // Add parent context container
+        this.parentContext = document.createElement('div');
+        this.parentContext.className = 'parent-context';
+        this.parentContext.innerHTML = '<div class="parent-context-inner"></div>';
+        this.slider.parentElement.insertBefore(this.parentContext, this.slider);
+    }
+
+    updateParentContext() {
+        const inner = this.parentContext.querySelector('.parent-context-inner');
+
+        if (this.history.length === 0) {
+            this.parentContext.classList.remove('visible');
+            return;
+        }
+
+        // Get the last item from history (the parent we clicked)
+        const parentItem = this.history[this.history.length - 1];
+        const parentNode = document.querySelector(`.tree-node[data-id="${parentItem.nodeId}"]`);
+
+        if (parentNode) {
+            const icon = parentNode.querySelector('.node-icon i')?.className || 'fas fa-circle';
+            const headline = parentNode.querySelector('.node-headline')?.textContent || '';
+            const subheadline = parentNode.querySelector('.node-subheadline')?.textContent || '';
+
+            inner.innerHTML = `
+                <div class="parent-context-card">
+                    <div class="parent-context-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="parent-context-text">
+                        <span class="parent-context-label">Aktueller Kontext:</span>
+                        <span class="parent-context-headline">${headline}</span>
+                        <span class="parent-context-subheadline">${subheadline}</span>
+                    </div>
+                    <button class="parent-context-back">
+                        <i class="fas fa-arrow-left"></i>
+                        Zurück
+                    </button>
+                </div>
+            `;
+
+            // Add click handler for back button
+            inner.querySelector('.parent-context-back').addEventListener('click', () => this.goBack());
+
+            this.parentContext.classList.add('visible');
+        }
     }
 
     handleNodeHover(node) {
@@ -169,21 +213,16 @@ class FeatureTree {
 
     showLevel(levelIndex) {
         this.currentLevelIndex = levelIndex;
-        this.updateSliderPosition();
         this.updateLevelStates();
+        this.updateParentContext();
         this.backBtn.disabled = this.history.length === 0;
     }
 
     navigateToLevel(levelIndex) {
         this.currentLevelIndex = levelIndex;
-        this.updateSliderPosition();
         this.updateLevelStates();
+        this.updateParentContext();
         this.backBtn.disabled = this.history.length === 0;
-    }
-
-    updateSliderPosition() {
-        const translateX = -(this.currentLevelIndex * this.levelWidth);
-        this.slider.style.transform = `translateX(${translateX}%)`;
     }
 
     updateLevelStates() {
