@@ -1,239 +1,284 @@
 /**
- * Vertikale Baum-Navigation
- * Dreistufige horizontale Verschachtelung mit vertikalem Aufbau
+ * Feature Tree Navigation
+ * Vertikaler Baum mit horizontalem Swipe zwischen Levels
  */
 
-class TreeNavigation {
+class FeatureTree {
     constructor() {
+        this.slider = document.getElementById('treeSlider');
+        this.backBtn = document.getElementById('backBtn');
+        this.breadcrumb = document.getElementById('breadcrumb');
         this.levels = document.querySelectorAll('.tree-level');
-        this.breadcrumb = document.querySelector('.breadcrumb');
-        this.selectedPath = []; // Speichert den aktuellen Pfad
+
+        // Navigation State
+        this.currentLevel = 0;  // Index des aktuellen Levels im Slider
+        this.history = [];      // Stack der Navigation [{levelIndex, nodeId, label}]
 
         this.init();
     }
 
     init() {
-        // Event-Listener für alle Tree-Items
-        document.querySelectorAll('.tree-item').forEach(item => {
-            item.addEventListener('click', (e) => this.handleItemClick(e, item));
+        // Zeige erstes Level (Level 1 = Nutzen)
+        this.showLevel(0);
+
+        // Event-Listener für alle Nodes
+        document.querySelectorAll('.tree-node').forEach(node => {
+            node.addEventListener('click', (e) => this.handleNodeClick(e, node));
         });
 
-        // Initial: Nur Level 1 aktiv, Level 2 als Preview
-        this.setActiveLevel(1);
-        this.showPreview(2);
+        // Back-Button
+        this.backBtn.addEventListener('click', () => this.goBack());
 
-        // Alle Items in Level 2 und 3 verstecken
-        this.hideAllItemsInLevel(2);
-        this.hideAllItemsInLevel(3);
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Backspace') {
+                e.preventDefault();
+                this.goBack();
+            }
+        });
     }
 
-    handleItemClick(event, item) {
-        const itemId = item.dataset.id;
-        const parentLevel = parseInt(item.closest('.tree-level').dataset.level);
-        const hasChildren = item.dataset.children;
-        const isLeaf = item.classList.contains('leaf');
-
-        // Entferne vorherige Auswahl auf diesem Level
-        this.clearSelectionOnLevel(parentLevel);
-
-        // Markiere dieses Item als ausgewählt
-        item.classList.add('selected');
-
-        // Aktualisiere den Pfad
-        this.selectedPath = this.selectedPath.slice(0, parentLevel - 1);
-        this.selectedPath.push({
-            id: itemId,
-            text: item.querySelector('.item-text').textContent,
-            level: parentLevel
-        });
-
-        // Aktualisiere Breadcrumb
-        this.updateBreadcrumb();
-
-        if (isLeaf) {
-            // Leaf-Item: Zeige Auswahl-Feedback
-            this.showLeafSelection(item);
+    handleNodeClick(event, node) {
+        // Wenn Leaf-Node, nichts tun (außer visuelles Feedback)
+        if (node.classList.contains('leaf')) {
+            this.animateLeafClick(node);
             return;
         }
 
-        if (hasChildren) {
-            const childIds = hasChildren.split(',');
-            const nextLevel = parentLevel + 1;
+        const nodeId = node.dataset.id;
+        const nodeLabel = node.querySelector('.node-headline').textContent;
 
-            // Verstecke alle Items auf den nachfolgenden Levels
-            for (let i = nextLevel; i <= 3; i++) {
-                this.hideAllItemsInLevel(i);
-                this.clearSelectionOnLevel(i);
-            }
+        // Finde das passende Child-Level
+        const childLevel = this.findChildLevel(nodeId);
 
-            // Zeige die Kinder-Items
-            this.showChildItems(childIds, nextLevel);
+        if (childLevel) {
+            // Markiere ausgewählten Node
+            this.clearSelection();
+            node.classList.add('selected');
 
-            // Aktiviere das nächste Level
-            this.setActiveLevel(nextLevel);
-
-            // Zeige Preview für das übernächste Level
-            if (nextLevel < 3) {
-                this.showPreview(nextLevel + 1);
-            }
-        }
-    }
-
-    setActiveLevel(level) {
-        this.levels.forEach(lvl => {
-            const lvlNum = parseInt(lvl.dataset.level);
-            lvl.classList.remove('active', 'preview');
-
-            if (lvlNum <= level) {
-                lvl.classList.add('active');
-            }
-        });
-    }
-
-    showPreview(level) {
-        const previewLevel = document.querySelector(`.tree-level[data-level="${level}"]`);
-        if (previewLevel && !previewLevel.classList.contains('active')) {
-            previewLevel.classList.add('preview');
-        }
-    }
-
-    clearSelectionOnLevel(level) {
-        const levelEl = document.querySelector(`.tree-level[data-level="${level}"]`);
-        if (levelEl) {
-            levelEl.querySelectorAll('.tree-item.selected').forEach(item => {
-                item.classList.remove('selected');
+            // Speichere aktuelle Position in History
+            this.history.push({
+                levelIndex: this.currentLevel,
+                nodeId: nodeId,
+                label: nodeLabel
             });
+
+            // Finde Index des Child-Levels
+            const childIndex = Array.from(this.levels).indexOf(childLevel);
+
+            // Navigiere zum Child-Level
+            this.navigateToLevel(childIndex);
+
+            // Update Breadcrumb
+            this.updateBreadcrumb();
         }
     }
 
-    hideAllItemsInLevel(level) {
-        const levelEl = document.querySelector(`.tree-level[data-level="${level}"]`);
-        if (levelEl) {
-            levelEl.querySelectorAll('.tree-item').forEach(item => {
-                item.classList.add('hidden');
-                item.classList.remove('animate-in');
-            });
-        }
+    findChildLevel(parentId) {
+        // Suche Level mit data-parent="parentId"
+        return document.querySelector(`.tree-level[data-parent="${parentId}"]`);
     }
 
-    showChildItems(childIds, level) {
-        const levelEl = document.querySelector(`.tree-level[data-level="${level}"]`);
-        if (!levelEl) return;
+    navigateToLevel(levelIndex) {
+        // Berechne Translation für Slider
+        const translateX = -levelIndex * 100;
+        this.slider.style.transform = `translateX(${translateX}%)`;
 
-        childIds.forEach((childId, index) => {
-            const childItem = levelEl.querySelector(`.tree-item[data-id="${childId.trim()}"]`);
-            if (childItem) {
-                childItem.classList.remove('hidden');
+        // Deaktiviere altes Level
+        this.levels[this.currentLevel].classList.remove('active');
 
-                // Gestaffelte Animation
-                setTimeout(() => {
-                    childItem.classList.add('animate-in');
-                }, index * 50);
-            }
-        });
-    }
-
-    showLeafSelection(item) {
-        // Visuelles Feedback für Leaf-Auswahl
-        item.style.transform = 'scale(1.02)';
+        // Aktiviere neues Level nach kurzer Verzögerung für Animation
         setTimeout(() => {
-            item.style.transform = '';
-        }, 200);
+            this.levels[levelIndex].classList.add('active');
+        }, 100);
 
-        // Optional: Event für externe Handler
+        this.currentLevel = levelIndex;
+
+        // Back-Button aktivieren wenn nicht auf erstem Level
+        this.backBtn.disabled = this.history.length === 0;
+    }
+
+    showLevel(levelIndex) {
+        // Initiale Anzeige ohne Animation
+        this.levels.forEach((level, idx) => {
+            level.classList.toggle('active', idx === levelIndex);
+        });
+        this.currentLevel = levelIndex;
+    }
+
+    goBack() {
+        if (this.history.length === 0) return;
+
+        // Pop letzte Position aus History
+        const previous = this.history.pop();
+
+        // Navigiere zurück
+        this.navigateToLevel(previous.levelIndex);
+
+        // Clear Selection
+        this.clearSelection();
+
+        // Update Breadcrumb
+        this.updateBreadcrumb();
+    }
+
+    clearSelection() {
+        document.querySelectorAll('.tree-node.selected').forEach(node => {
+            node.classList.remove('selected');
+        });
+    }
+
+    updateBreadcrumb() {
+        this.breadcrumb.innerHTML = '';
+
+        // Start-Crumb (Nutzen)
+        const startCrumb = document.createElement('span');
+        startCrumb.className = 'crumb';
+        startCrumb.textContent = 'Nutzen';
+        startCrumb.addEventListener('click', () => this.navigateToRoot());
+        this.breadcrumb.appendChild(startCrumb);
+
+        // History-Crumbs
+        this.history.forEach((item, index) => {
+            // Separator
+            const separator = document.createElement('span');
+            separator.className = 'crumb-separator';
+            separator.textContent = '›';
+            this.breadcrumb.appendChild(separator);
+
+            // Crumb
+            const crumb = document.createElement('span');
+            crumb.className = 'crumb';
+            crumb.textContent = item.label;
+            crumb.addEventListener('click', () => this.navigateToCrumb(index));
+            this.breadcrumb.appendChild(crumb);
+        });
+
+        // Markiere letzten Crumb als aktiv
+        const crumbs = this.breadcrumb.querySelectorAll('.crumb');
+        crumbs.forEach((crumb, idx) => {
+            crumb.classList.toggle('active', idx === crumbs.length - 1);
+        });
+    }
+
+    navigateToRoot() {
+        if (this.history.length === 0) return;
+
+        // Clear history
+        this.history = [];
+
+        // Navigiere zu Level 0
+        this.navigateToLevel(0);
+        this.clearSelection();
+        this.updateBreadcrumb();
+    }
+
+    navigateToCrumb(crumbIndex) {
+        // crumbIndex 0 = erstes Item in History (nach Nutzen)
+        // Wir müssen zu diesem Punkt navigieren
+
+        if (crumbIndex >= this.history.length - 1) return; // Bereits dort
+
+        // Kürze History
+        const targetHistory = this.history.slice(0, crumbIndex + 1);
+        const targetItem = targetHistory[targetHistory.length - 1];
+
+        // Finde das Level, das zu diesem History-Item gehört
+        const childLevel = this.findChildLevel(targetItem.nodeId);
+        const targetIndex = childLevel ? Array.from(this.levels).indexOf(childLevel) : 0;
+
+        // Update History
+        this.history = targetHistory;
+
+        // Navigiere
+        this.navigateToLevel(targetIndex);
+        this.clearSelection();
+        this.updateBreadcrumb();
+    }
+
+    animateLeafClick(node) {
+        // Visuelles Feedback für Leaf-Nodes
+        const content = node.querySelector('.node-content');
+        content.style.transform = 'scale(0.98)';
+
+        setTimeout(() => {
+            content.style.transform = '';
+        }, 150);
+
+        // Optional: Custom Event für externe Verwendung
         const event = new CustomEvent('leafSelected', {
             detail: {
-                path: this.selectedPath,
-                item: item.querySelector('.item-text').textContent
+                id: node.dataset.id,
+                headline: node.querySelector('.node-headline').textContent,
+                description: node.querySelector('.node-description').textContent,
+                path: this.history.map(h => h.label)
             }
         });
         document.dispatchEvent(event);
 
-        console.log('Ausgewählt:', this.selectedPath.map(p => p.text).join(' > '));
+        // Log für Demo
+        console.log('Ausgewählt:', {
+            path: [...this.history.map(h => h.label), node.querySelector('.node-headline').textContent].join(' → ')
+        });
+    }
+}
+
+// Touch/Swipe Support
+class SwipeHandler {
+    constructor(element, onSwipeLeft, onSwipeRight) {
+        this.element = element;
+        this.onSwipeLeft = onSwipeLeft;
+        this.onSwipeRight = onSwipeRight;
+        this.startX = 0;
+        this.startY = 0;
+        this.threshold = 50;
+
+        this.init();
     }
 
-    updateBreadcrumb() {
-        // Lösche aktuelle Breadcrumbs (außer Start)
-        this.breadcrumb.innerHTML = '';
+    init() {
+        this.element.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+        this.element.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+    }
 
-        // Start-Element
-        const startEl = document.createElement('span');
-        startEl.className = 'breadcrumb-item';
-        startEl.textContent = 'Start';
-        startEl.dataset.level = '0';
-        startEl.addEventListener('click', () => this.resetToStart());
-        this.breadcrumb.appendChild(startEl);
+    handleTouchStart(e) {
+        this.startX = e.touches[0].clientX;
+        this.startY = e.touches[0].clientY;
+    }
 
-        // Pfad-Elemente
-        this.selectedPath.forEach((pathItem, index) => {
-            // Separator
-            const separator = document.createElement('span');
-            separator.className = 'breadcrumb-separator';
-            separator.textContent = '›';
-            this.breadcrumb.appendChild(separator);
+    handleTouchEnd(e) {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
 
-            // Breadcrumb-Item
-            const crumbEl = document.createElement('span');
-            crumbEl.className = 'breadcrumb-item';
-            if (index === this.selectedPath.length - 1) {
-                crumbEl.classList.add('active');
+        const diffX = this.startX - endX;
+        const diffY = Math.abs(this.startY - endY);
+
+        // Nur horizontale Swipes erkennen
+        if (Math.abs(diffX) > this.threshold && diffY < 100) {
+            if (diffX > 0) {
+                // Swipe left - nicht verwendet, Navigation erfolgt durch Klick
+            } else {
+                // Swipe right - zurück
+                this.onSwipeRight();
             }
-            crumbEl.textContent = pathItem.text;
-            crumbEl.dataset.level = pathItem.level;
-            crumbEl.dataset.id = pathItem.id;
-            crumbEl.addEventListener('click', () => this.navigateToLevel(index));
-            this.breadcrumb.appendChild(crumbEl);
-        });
-    }
-
-    resetToStart() {
-        // Zurück zum Anfang
-        this.selectedPath = [];
-
-        // Alle Auswahlen entfernen
-        document.querySelectorAll('.tree-item.selected').forEach(item => {
-            item.classList.remove('selected');
-        });
-
-        // Level 2 und 3 verstecken
-        this.hideAllItemsInLevel(2);
-        this.hideAllItemsInLevel(3);
-
-        // Nur Level 1 aktiv
-        this.setActiveLevel(1);
-        this.showPreview(2);
-
-        // Breadcrumb aktualisieren
-        this.updateBreadcrumb();
-    }
-
-    navigateToLevel(pathIndex) {
-        if (pathIndex < 0) {
-            this.resetToStart();
-            return;
-        }
-
-        // Kürze den Pfad
-        const targetPath = this.selectedPath.slice(0, pathIndex + 1);
-        const lastItem = targetPath[targetPath.length - 1];
-
-        // Finde und klicke das entsprechende Element
-        const targetItem = document.querySelector(`.tree-item[data-id="${lastItem.id}"]`);
-        if (targetItem) {
-            // Setze den Pfad zurück vor dem Klick
-            this.selectedPath = this.selectedPath.slice(0, pathIndex);
-            targetItem.click();
         }
     }
 }
 
-// Event-Listener für Leaf-Auswahl (kann extern genutzt werden)
-document.addEventListener('leafSelected', (e) => {
-    // Hier können weitere Aktionen bei Leaf-Auswahl durchgeführt werden
-    // z.B. Modal öffnen, Daten laden, etc.
-});
-
-// Initialisierung
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    new TreeNavigation();
+    const tree = new FeatureTree();
+
+    // Swipe für mobile Navigation (zurück)
+    new SwipeHandler(
+        document.querySelector('.tree-viewport'),
+        () => {}, // Swipe left - nicht verwendet
+        () => tree.goBack() // Swipe right - zurück
+    );
+
+    // Event-Listener für Leaf-Auswahl (kann extern genutzt werden)
+    document.addEventListener('leafSelected', (e) => {
+        // Hier können weitere Aktionen bei Leaf-Auswahl durchgeführt werden
+        // z.B. Modal öffnen, Details anzeigen, etc.
+    });
 });

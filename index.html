@@ -3,183 +3,764 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vertikaler Baum - Navigation</title>
+    <title>Feature Tree - Software Features</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="tree-container">
-        <h1 class="tree-title">Vertikale Baum-Navigation</h1>
-
-        <div class="tree-wrapper">
-            <!-- Level 1 - Hauptkategorien -->
-            <div class="tree-level level-1 active" data-level="1">
-                <div class="level-header">Stufe 1</div>
-                <div class="tree-items">
-                    <div class="tree-item" data-id="1" data-children="1-1,1-2,1-3">
-                        <span class="item-icon">📁</span>
-                        <span class="item-text">Produkte</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="2" data-children="2-1,2-2,2-3">
-                        <span class="item-icon">📁</span>
-                        <span class="item-text">Services</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="3" data-children="3-1,3-2,3-3">
-                        <span class="item-icon">📁</span>
-                        <span class="item-text">Ressourcen</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Level 2 - Unterkategorien -->
-            <div class="tree-level level-2" data-level="2">
-                <div class="level-header">Stufe 2</div>
-                <div class="tree-items">
-                    <!-- Produkte Kinder -->
-                    <div class="tree-item" data-id="1-1" data-parent="1" data-children="1-1-1,1-1-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Software</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="1-2" data-parent="1" data-children="1-2-1,1-2-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Hardware</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="1-3" data-parent="1" data-children="1-3-1,1-3-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Bundles</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <!-- Services Kinder -->
-                    <div class="tree-item" data-id="2-1" data-parent="2" data-children="2-1-1,2-1-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Beratung</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="2-2" data-parent="2" data-children="2-2-1,2-2-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Support</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="2-3" data-parent="2" data-children="2-3-1,2-3-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Schulungen</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <!-- Ressourcen Kinder -->
-                    <div class="tree-item" data-id="3-1" data-parent="3" data-children="3-1-1,3-1-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Dokumentation</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="3-2" data-parent="3" data-children="3-2-1,3-2-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Downloads</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                    <div class="tree-item" data-id="3-3" data-parent="3" data-children="3-3-1,3-3-2">
-                        <span class="item-icon">📄</span>
-                        <span class="item-text">Blog</span>
-                        <span class="item-arrow">›</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Level 3 - Detail-Elemente -->
-            <div class="tree-level level-3" data-level="3">
-                <div class="level-header">Stufe 3</div>
-                <div class="tree-items">
-                    <!-- Software Kinder -->
-                    <div class="tree-item leaf" data-id="1-1-1" data-parent="1-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Desktop Apps</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="1-1-2" data-parent="1-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Mobile Apps</span>
-                    </div>
-                    <!-- Hardware Kinder -->
-                    <div class="tree-item leaf" data-id="1-2-1" data-parent="1-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Server</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="1-2-2" data-parent="1-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Workstations</span>
-                    </div>
-                    <!-- Bundles Kinder -->
-                    <div class="tree-item leaf" data-id="1-3-1" data-parent="1-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Starter-Paket</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="1-3-2" data-parent="1-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Enterprise-Paket</span>
-                    </div>
-                    <!-- Beratung Kinder -->
-                    <div class="tree-item leaf" data-id="2-1-1" data-parent="2-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Strategieberatung</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="2-1-2" data-parent="2-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Technische Beratung</span>
-                    </div>
-                    <!-- Support Kinder -->
-                    <div class="tree-item leaf" data-id="2-2-1" data-parent="2-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Basic Support</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="2-2-2" data-parent="2-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Premium Support</span>
-                    </div>
-                    <!-- Schulungen Kinder -->
-                    <div class="tree-item leaf" data-id="2-3-1" data-parent="2-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Online-Kurse</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="2-3-2" data-parent="2-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Vor-Ort-Training</span>
-                    </div>
-                    <!-- Dokumentation Kinder -->
-                    <div class="tree-item leaf" data-id="3-1-1" data-parent="3-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">API-Docs</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="3-1-2" data-parent="3-1">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Handbücher</span>
-                    </div>
-                    <!-- Downloads Kinder -->
-                    <div class="tree-item leaf" data-id="3-2-1" data-parent="3-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Installers</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="3-2-2" data-parent="3-2">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Updates</span>
-                    </div>
-                    <!-- Blog Kinder -->
-                    <div class="tree-item leaf" data-id="3-3-1" data-parent="3-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">News</span>
-                    </div>
-                    <div class="tree-item leaf" data-id="3-3-2" data-parent="3-3">
-                        <span class="item-icon">🔹</span>
-                        <span class="item-text">Tutorials</span>
-                    </div>
-                </div>
+    <div class="tree-section">
+        <!-- Navigation Header -->
+        <div class="tree-nav">
+            <button class="nav-back" id="backBtn" disabled>
+                <i class="fas fa-arrow-left"></i>
+                <span>Zurück</span>
+            </button>
+            <div class="nav-breadcrumb" id="breadcrumb">
+                <span class="crumb active">Nutzen</span>
             </div>
         </div>
 
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb">
-            <span class="breadcrumb-item active" data-level="0">Start</span>
+        <!-- Tree Container - alle Levels -->
+        <div class="tree-viewport">
+            <div class="tree-slider" id="treeSlider">
+
+                <!-- LEVEL 1: Nutzen (Benefits) -->
+                <div class="tree-level" data-level="1">
+                    <div class="tree-trunk"></div>
+
+                    <!-- Nutzen 1 - Links -->
+                    <div class="tree-node left" data-id="benefit-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Schnellere Markteinführung</h3>
+                                <p class="node-subheadline">Time-to-Market um 40% reduzieren</p>
+                                <p class="node-description">Beschleunigen Sie Ihre Produktentwicklung durch automatisierte Workflows und intelligente Vorlagen.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nutzen 2 - Rechts -->
+                    <div class="tree-node right" data-id="benefit-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Maximale Sicherheit</h3>
+                                <p class="node-subheadline">Enterprise-Grade Datenschutz</p>
+                                <p class="node-description">Schützen Sie sensible Daten mit modernster Verschlüsselung und Compliance-konformen Prozessen.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nutzen 3 - Links -->
+                    <div class="tree-node left" data-id="benefit-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Skalierbare Performance</h3>
+                                <p class="node-subheadline">Wachstum ohne Grenzen</p>
+                                <p class="node-description">Von 10 bis 10.000 Nutzer - unsere Infrastruktur wächst nahtlos mit Ihren Anforderungen.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nutzen 4 - Rechts -->
+                    <div class="tree-node right" data-id="benefit-4">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-users-gear"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Nahtlose Zusammenarbeit</h3>
+                                <p class="node-subheadline">Teams effektiv verbinden</p>
+                                <p class="node-description">Ermöglichen Sie Echtzeit-Kollaboration über Abteilungen und Standorte hinweg.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL 2: Funktionen (Features) - für jeden Nutzen -->
+
+                <!-- Features für Benefit 1: Schnellere Markteinführung -->
+                <div class="tree-level" data-level="2" data-parent="benefit-1">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Schnellere Markteinführung</span>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-1-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Workflow Automation</h3>
+                                <p class="node-subheadline">Repetitive Aufgaben eliminieren</p>
+                                <p class="node-description">Automatisieren Sie wiederkehrende Prozesse mit visuellen Workflow-Buildern.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right" data-id="feature-1-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Template Library</h3>
+                                <p class="node-subheadline">Sofort einsatzbereit</p>
+                                <p class="node-description">Über 200 vorgefertigte Templates für schnellen Projektstart.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-1-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">API Integrationen</h3>
+                                <p class="node-subheadline">Nahtlose Verbindungen</p>
+                                <p class="node-description">Verbinden Sie bestehende Tools über REST APIs und Webhooks.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features für Benefit 2: Maximale Sicherheit -->
+                <div class="tree-level" data-level="2" data-parent="benefit-2">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Maximale Sicherheit</span>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-2-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">End-to-End Encryption</h3>
+                                <p class="node-subheadline">AES-256 Standard</p>
+                                <p class="node-description">Alle Daten werden sowohl in Transit als auch at Rest verschlüsselt.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right" data-id="feature-2-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Access Control</h3>
+                                <p class="node-subheadline">Granulare Berechtigungen</p>
+                                <p class="node-description">Rollenbasierte Zugriffskontrolle mit feingranularen Permissions.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-2-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Compliance Suite</h3>
+                                <p class="node-subheadline">DSGVO, ISO 27001, SOC 2</p>
+                                <p class="node-description">Integrierte Compliance-Tools für alle wichtigen Standards.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features für Benefit 3: Skalierbare Performance -->
+                <div class="tree-level" data-level="2" data-parent="benefit-3">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Skalierbare Performance</span>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-3-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Cloud Infrastructure</h3>
+                                <p class="node-subheadline">Auto-Scaling aktiviert</p>
+                                <p class="node-description">Elastische Ressourcen, die sich automatisch an die Last anpassen.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right" data-id="feature-3-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Distributed Database</h3>
+                                <p class="node-subheadline">Global repliziert</p>
+                                <p class="node-description">Datenbank mit globaler Replikation für minimale Latenz.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-3-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-gauge-high"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Performance Monitoring</h3>
+                                <p class="node-subheadline">Echtzeit-Insights</p>
+                                <p class="node-description">Umfassende Dashboards für Performance und Ressourcennutzung.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features für Benefit 4: Nahtlose Zusammenarbeit -->
+                <div class="tree-level" data-level="2" data-parent="benefit-4">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Nahtlose Zusammenarbeit</span>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-4-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Real-Time Chat</h3>
+                                <p class="node-subheadline">Instant Messaging</p>
+                                <p class="node-description">Integrierter Chat mit Channels, Threads und Direktnachrichten.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right" data-id="feature-4-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-file-pen"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Collaborative Editing</h3>
+                                <p class="node-subheadline">Gemeinsam bearbeiten</p>
+                                <p class="node-description">Dokumente gleichzeitig bearbeiten mit Live-Cursor und Kommentaren.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node left" data-id="feature-4-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Video Meetings</h3>
+                                <p class="node-subheadline">HD-Qualität integriert</p>
+                                <p class="node-description">Videoanrufe direkt aus der App mit Screen-Sharing und Recording.</p>
+                            </div>
+                            <div class="node-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL 3: Unterfunktionen (Sub-features) - Beispiele -->
+
+                <!-- Sub-features für Feature 1-1: Workflow Automation -->
+                <div class="tree-level" data-level="3" data-parent="feature-1-1">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Workflow Automation</span>
+                    </div>
+
+                    <div class="tree-node left leaf" data-id="sub-1-1-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-diagram-project"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Visual Flow Builder</h3>
+                                <p class="node-subheadline">Drag & Drop Editor</p>
+                                <p class="node-description">Erstellen Sie komplexe Workflows visuell ohne Code.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right leaf" data-id="sub-1-1-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Scheduled Triggers</h3>
+                                <p class="node-subheadline">Zeit-basierte Automatisierung</p>
+                                <p class="node-description">Starten Sie Workflows zu festgelegten Zeiten oder Intervallen.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node left leaf" data-id="sub-1-1-3">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Conditional Logic</h3>
+                                <p class="node-subheadline">If/Then/Else Bedingungen</p>
+                                <p class="node-description">Verzweigen Sie Workflows basierend auf Daten und Bedingungen.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-features für Feature 1-2: Template Library -->
+                <div class="tree-level" data-level="3" data-parent="feature-1-2">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">Template Library</span>
+                    </div>
+
+                    <div class="tree-node left leaf" data-id="sub-1-2-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Branchen-Templates</h3>
+                                <p class="node-subheadline">Spezialisierte Lösungen</p>
+                                <p class="node-description">Vorkonfigurierte Templates für Healthcare, Finance, Retail und mehr.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right leaf" data-id="sub-1-2-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Custom Templates</h3>
+                                <p class="node-subheadline">Eigene Vorlagen erstellen</p>
+                                <p class="node-description">Speichern Sie eigene Konfigurationen als wiederverwendbare Templates.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-features für Feature 1-3: API Integrationen -->
+                <div class="tree-level" data-level="3" data-parent="feature-1-3">
+                    <div class="tree-trunk"></div>
+
+                    <div class="level-header">
+                        <span class="parent-label">API Integrationen</span>
+                    </div>
+
+                    <div class="tree-node left leaf" data-id="sub-1-3-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-puzzle-piece"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Pre-built Connectors</h3>
+                                <p class="node-subheadline">50+ Integrationen</p>
+                                <p class="node-description">Salesforce, Slack, Jira, SAP und viele mehr out-of-the-box.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-node right leaf" data-id="sub-1-3-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="node-text">
+                                <h3 class="node-headline">REST API</h3>
+                                <p class="node-subheadline">Vollständige API-Dokumentation</p>
+                                <p class="node-description">Entwickeln Sie eigene Integrationen mit unserer RESTful API.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weitere Level 3 für andere Features... -->
+                <!-- Feature 2-1: End-to-End Encryption -->
+                <div class="tree-level" data-level="3" data-parent="feature-2-1">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">End-to-End Encryption</span></div>
+                    <div class="tree-node left leaf" data-id="sub-2-1-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-key"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Key Management</h3>
+                                <p class="node-subheadline">HSM-gestützt</p>
+                                <p class="node-description">Sichere Schlüsselverwaltung mit Hardware Security Modules.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-2-1-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-rotate"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Auto Key Rotation</h3>
+                                <p class="node-subheadline">Automatischer Schlüsselwechsel</p>
+                                <p class="node-description">Regelmäßige automatische Rotation aller Verschlüsselungskeys.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2-2: Access Control -->
+                <div class="tree-level" data-level="3" data-parent="feature-2-2">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Access Control</span></div>
+                    <div class="tree-node left leaf" data-id="sub-2-2-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-users"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Role-Based Access</h3>
+                                <p class="node-subheadline">RBAC System</p>
+                                <p class="node-description">Definieren Sie Rollen mit spezifischen Berechtigungsprofilen.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-2-2-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-fingerprint"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Multi-Factor Auth</h3>
+                                <p class="node-subheadline">2FA / MFA</p>
+                                <p class="node-description">Unterstützung für TOTP, SMS, Hardware-Keys und Biometrie.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2-3: Compliance Suite -->
+                <div class="tree-level" data-level="3" data-parent="feature-2-3">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Compliance Suite</span></div>
+                    <div class="tree-node left leaf" data-id="sub-2-3-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-file-contract"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Audit Logs</h3>
+                                <p class="node-subheadline">Lückenlose Protokollierung</p>
+                                <p class="node-description">Vollständige Audit-Trails für alle Benutzeraktionen.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-2-3-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-certificate"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Compliance Reports</h3>
+                                <p class="node-subheadline">Automatische Berichte</p>
+                                <p class="node-description">Generieren Sie Compliance-Reports auf Knopfdruck.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3-1 bis 3-3 -->
+                <div class="tree-level" data-level="3" data-parent="feature-3-1">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Cloud Infrastructure</span></div>
+                    <div class="tree-node left leaf" data-id="sub-3-1-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-server"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Multi-Cloud Support</h3>
+                                <p class="node-subheadline">AWS, Azure, GCP</p>
+                                <p class="node-description">Deployment auf allen großen Cloud-Plattformen möglich.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-3-1-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-arrows-up-down"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Vertical Scaling</h3>
+                                <p class="node-subheadline">Ressourcen on-demand</p>
+                                <p class="node-description">CPU, RAM und Storage dynamisch anpassen.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tree-level" data-level="3" data-parent="feature-3-2">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Distributed Database</span></div>
+                    <div class="tree-node left leaf" data-id="sub-3-2-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-globe"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Geo-Replication</h3>
+                                <p class="node-subheadline">Weltweit verteilt</p>
+                                <p class="node-description">Daten werden automatisch in mehreren Regionen repliziert.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-3-2-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Read Replicas</h3>
+                                <p class="node-subheadline">Schnelle Lesezugriffe</p>
+                                <p class="node-description">Lokale Read-Replicas für minimale Latenz.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tree-level" data-level="3" data-parent="feature-3-3">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Performance Monitoring</span></div>
+                    <div class="tree-node left leaf" data-id="sub-3-3-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Live Dashboards</h3>
+                                <p class="node-subheadline">Echtzeit-Metriken</p>
+                                <p class="node-description">Customizable Dashboards mit Live-Updates.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-3-3-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-bell"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Alerting</h3>
+                                <p class="node-subheadline">Proaktive Benachrichtigungen</p>
+                                <p class="node-description">Konfigurierbare Alerts bei Schwellenwert-Überschreitungen.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4-1 bis 4-3 -->
+                <div class="tree-level" data-level="3" data-parent="feature-4-1">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Real-Time Chat</span></div>
+                    <div class="tree-node left leaf" data-id="sub-4-1-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-hashtag"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Channels</h3>
+                                <p class="node-subheadline">Themenbasierte Räume</p>
+                                <p class="node-description">Öffentliche und private Channels für Teams und Projekte.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-4-1-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-reply"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Threads</h3>
+                                <p class="node-subheadline">Kontextbezogene Diskussionen</p>
+                                <p class="node-description">Antworten Sie in Threads um Konversationen zu organisieren.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tree-level" data-level="3" data-parent="feature-4-2">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Collaborative Editing</span></div>
+                    <div class="tree-node left leaf" data-id="sub-4-2-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-mouse-pointer"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Live Cursors</h3>
+                                <p class="node-subheadline">Sehen wer wo arbeitet</p>
+                                <p class="node-description">Echtzeit-Anzeige aller aktiven Bearbeiter im Dokument.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-4-2-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-history"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Version History</h3>
+                                <p class="node-subheadline">Änderungsverlauf</p>
+                                <p class="node-description">Vollständige Historie mit Restore-Funktion.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tree-level" data-level="3" data-parent="feature-4-3">
+                    <div class="tree-trunk"></div>
+                    <div class="level-header"><span class="parent-label">Video Meetings</span></div>
+                    <div class="tree-node left leaf" data-id="sub-4-3-1">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-desktop"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Screen Sharing</h3>
+                                <p class="node-subheadline">Bildschirm teilen</p>
+                                <p class="node-description">Teilen Sie Ihren Bildschirm, Fenster oder Browser-Tabs.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-node right leaf" data-id="sub-4-3-2">
+                        <div class="node-branch"></div>
+                        <div class="node-connector"></div>
+                        <div class="node-content">
+                            <div class="node-icon"><i class="fas fa-circle-dot"></i></div>
+                            <div class="node-text">
+                                <h3 class="node-headline">Recording</h3>
+                                <p class="node-subheadline">Meetings aufzeichnen</p>
+                                <p class="node-description">Speichern Sie Meetings mit automatischer Transkription.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
