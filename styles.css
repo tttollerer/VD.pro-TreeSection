@@ -261,14 +261,26 @@ body {
 .tree-level.peek-left .tree-trunk,
 .tree-level.peek-left .tree-node,
 .tree-level.peek-left .level-header,
-.tree-level.peek-left .level-label,
+.tree-level.peek-left .level-label {
+    opacity: 0.5;
+    filter: blur(1px);
+    transition: all 0.3s ease;
+}
+
+/* Right preview: less blur, same scaling */
 .tree-level.peek-right .tree-trunk,
 .tree-level.peek-right .tree-node,
 .tree-level.peek-right .level-header,
 .tree-level.peek-right .level-label {
-    opacity: 0.5;
-    filter: blur(1px);
+    opacity: 0.7;
+    filter: blur(0.15px);
     transition: all 0.3s ease;
+}
+
+/* Make entire peek level clickable */
+.tree-level.peek-left,
+.tree-level.peek-right {
+    cursor: pointer;
 }
 
 /* Hidden levels */
@@ -304,116 +316,118 @@ body {
     opacity: 1;
 }
 
-/* Peek Overlay - nur bei peek-Levels sichtbar und klickbar */
+/* Peek Overlay - hidden, replaced by peek-nav-container */
 .peek-overlay {
+    display: none !important;
+}
+
+/* Separate Navigation Container - outside scaled levels */
+.peek-nav-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.peek-nav {
     position: fixed;
-    top: 150px;
+    top: 200px;
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    background: transparent;
-    opacity: 1;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 100;
+    gap: 8px;
+    padding: 12px;
     cursor: pointer;
-    gap: 15px;
-}
-
-/* Position for left peek overlay */
-.tree-level.peek-left .peek-overlay {
-    left: 50px;
-    right: auto;
-}
-
-/* Position for right peek overlay */
-.tree-level.peek-right .peek-overlay {
-    right: 50px;
-    left: auto;
-}
-
-/* Overlay nur bei peek-Levels anzeigen */
-.tree-level.peek-left .peek-overlay,
-.tree-level.peek-right .peek-overlay {
-    display: flex;
     pointer-events: auto;
-    opacity: 1;
+    z-index: 100;
 }
 
-/* Aktives Level - Overlay komplett versteckt */
-.tree-level.active .peek-overlay {
-    display: none !important;
-    pointer-events: none !important;
+.peek-nav.visible {
+    display: flex;
 }
 
-.peek-overlay i {
-    font-size: 2rem;
-    color: #0ea5e9;
-    background: white;
-    width: 60px;
-    height: 60px;
+.peek-nav-left {
+    left: 10%;
+}
+
+.peek-nav-right {
+    display: none !important; /* Hide right navigation - user action not predictable */
+}
+
+.peek-nav i {
+    font-size: 1rem;
+    color: white;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 2px 12px rgba(14, 165, 233, 0.35);
     transition: transform 0.2s ease;
 }
 
-.peek-overlay-title {
-    color: #0ea5e9;
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 10px 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-width: 200px;
-    pointer-events: auto;
-}
-
-.peek-overlay:hover i {
-    transform: scale(1.1);
-}
-
-/* Specific icons via CSS based on parent class */
-.tree-level.peek-left .peek-overlay i::before {
+.peek-nav-left i::before {
     content: "\f060"; /* fa-arrow-left */
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
 }
 
-.tree-level.peek-right .peek-overlay i::before {
+.peek-nav-right i::before {
     content: "\f061"; /* fa-arrow-right */
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
+}
+
+.peek-nav-title {
+    color: #0ea5e9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 12px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
+}
+
+.peek-nav:hover i {
+    transform: scale(1.15);
+}
+
+.peek-nav:hover .peek-nav-title {
+    color: #0284c7;
 }
 
 /* Level Header */
 .level-header {
     grid-column: 1 / -1; /* Span both columns */
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
 }
 
 .parent-label {
     display: inline-block;
-    padding: 8px 20px;
+    padding: 12px 28px;
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
     color: white;
     font-weight: 600;
-    font-size: 0.9rem;
-    border-radius: 25px;
-    box-shadow: 0 3px 12px rgba(14, 165, 233, 0.25);
+    font-size: 1rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
 }
 
 /* Baum-Stamm */
 .tree-trunk {
     position: absolute;
     left: 50%;
-    top: 40px;
+    top: 80px; /* Increased to start below header */
     bottom: 10px;
     width: 5px;
     background: linear-gradient(180deg, #22c55e 0%, #16a34a 50%, #15803d 100%);

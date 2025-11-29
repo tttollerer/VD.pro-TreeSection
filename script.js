@@ -9,6 +9,10 @@ class FeatureTree {
         this.backBtn = document.getElementById('backBtn');
         this.breadcrumb = document.getElementById('breadcrumb');
         this.levels = document.querySelectorAll('.tree-level');
+        
+        // Separate navigation elements
+        this.peekNavLeft = document.getElementById('peekNavLeft');
+        this.peekNavRight = document.getElementById('peekNavRight');
 
         // Navigation State
         this.currentLevelIndex = 0;
@@ -23,6 +27,9 @@ class FeatureTree {
     init() {
         // Füge Peek-Overlays hinzu
         this.addPeekOverlays();
+        
+        // Setup peek navigation click handlers
+        this.setupPeekNavigation();
 
         // Zeige erstes Level
         this.showLevel(0);
@@ -63,6 +70,16 @@ class FeatureTree {
             });
         });
 
+        // Event-Listener für Klicks auf das gesamte Peek-Level
+        this.levels.forEach(level => {
+            level.addEventListener('click', (e) => {
+                if (level.classList.contains('peek-left')) {
+                    e.stopPropagation();
+                    this.goBack();
+                }
+            });
+        });
+
         // Back-Button
         this.backBtn.addEventListener('click', () => this.goBack());
 
@@ -78,6 +95,19 @@ class FeatureTree {
                 this.goBack();
             }
         });
+    }
+
+    setupPeekNavigation() {
+        // Left navigation (go back)
+        if (this.peekNavLeft) {
+            this.peekNavLeft.addEventListener('click', () => {
+                this.goBack();
+            });
+        }
+        
+        // Right navigation is handled via hover on nodes (preview)
+        // Clicking on right preview would need the hovered node context
+        // For now, right nav just shows preview info
     }
 
     addPeekOverlays() {
@@ -278,31 +308,49 @@ class FeatureTree {
         const peekRightIndex = this.previewChildIndex;
         let rightTitle = '';
         if (this.previewChildIndex !== null) {
-           // Find the node that triggered this preview
-           // We can get it from the currently hovered node? 
-           // Actually, previewChildIndex is set on hover.
-           // We need the label of the node we are hovering over.
-           // But updateLevelStates doesn't know about the hovered node directly.
-           // We can store the label in `this.previewLabel` similar to previewChildIndex.
-           rightTitle = this.previewLabel || 'Details';
+           rightTitle = this.previewLabel || 'Weiter';
         }
 
         this.levels.forEach((level, index) => {
             level.classList.remove('active', 'peek-left', 'peek-right', 'hidden');
-            const titleEl = level.querySelector('.peek-overlay-title');
 
             if (index === this.currentLevelIndex) {
                 level.classList.add('active');
             } else if (index === peekLeftIndex) {
                 level.classList.add('peek-left');
-                if (titleEl) titleEl.textContent = leftTitle;
             } else if (index === peekRightIndex) {
                 level.classList.add('peek-right');
-                if (titleEl) titleEl.textContent = rightTitle;
             } else {
                 level.classList.add('hidden');
             }
         });
+        
+        // Update separate navigation elements
+        this.updatePeekNavigation(peekLeftIndex, leftTitle, peekRightIndex, rightTitle);
+    }
+    
+    updatePeekNavigation(peekLeftIndex, leftTitle, peekRightIndex, rightTitle) {
+        // Left navigation
+        if (this.peekNavLeft) {
+            if (peekLeftIndex !== null) {
+                this.peekNavLeft.classList.add('visible');
+                const titleEl = this.peekNavLeft.querySelector('.peek-nav-title');
+                if (titleEl) titleEl.textContent = leftTitle;
+            } else {
+                this.peekNavLeft.classList.remove('visible');
+            }
+        }
+        
+        // Right navigation
+        if (this.peekNavRight) {
+            if (peekRightIndex !== null) {
+                this.peekNavRight.classList.add('visible');
+                const titleEl = this.peekNavRight.querySelector('.peek-nav-title');
+                if (titleEl) titleEl.textContent = rightTitle;
+            } else {
+                this.peekNavRight.classList.remove('visible');
+            }
+        }
     }
 
     goBack() {
