@@ -1,6 +1,6 @@
 /**
  * Feature Tree Navigation
- * Vertikaler Baum mit horizontalem Swipe zwischen Levels
+ * Vertikaler Baum mit Peek-Ansicht der benachbarten Stufen
  */
 
 class FeatureTree {
@@ -11,19 +11,31 @@ class FeatureTree {
         this.levels = document.querySelectorAll('.tree-level');
 
         // Navigation State
-        this.currentLevel = 0;  // Index des aktuellen Levels im Slider
-        this.history = [];      // Stack der Navigation [{levelIndex, nodeId, label}]
+        this.currentLevelIndex = 0;  // Index des aktuellen Levels im Slider
+        this.history = [];           // Stack der Navigation [{levelIndex, nodeId, label}]
+        this.visibleLevels = [];     // Aktuell sichtbare Levels [left, center, right]
+
+        // Level-Breite für Slide-Berechnung (60% = 0.6)
+        this.levelWidth = 60;
 
         this.init();
     }
 
     init() {
-        // Zeige erstes Level (Level 1 = Nutzen)
+        // Füge Peek-Overlays zu allen Levels hinzu
+        this.addPeekOverlays();
+
+        // Zeige erstes Level
         this.showLevel(0);
 
-        // Event-Listener für alle Nodes
+        // Event-Listener für Node-Klicks
         document.querySelectorAll('.tree-node').forEach(node => {
             node.addEventListener('click', (e) => this.handleNodeClick(e, node));
+        });
+
+        // Event-Listener für Level-Klicks (für Peek-Navigation)
+        this.levels.forEach((level, index) => {
+            level.addEventListener('click', (e) => this.handleLevelClick(e, level, index));
         });
 
         // Back-Button
@@ -35,11 +47,68 @@ class FeatureTree {
                 e.preventDefault();
                 this.goBack();
             }
+            if (e.key === 'ArrowLeft') {
+                this.navigateToPeekLeft();
+            }
+            if (e.key === 'ArrowRight') {
+                this.navigateToPeekRight();
+            }
         });
     }
 
+    addPeekOverlays() {
+        this.levels.forEach(level => {
+            // Overlay für Peek-Ansicht
+            const overlay = document.createElement('div');
+            overlay.className = 'peek-overlay';
+            overlay.innerHTML = '<i class="fas fa-hand-pointer"></i>';
+            level.appendChild(overlay);
+
+            // Label für Level-Typ
+            const label = document.createElement('div');
+            label.className = 'level-label';
+            const levelNum = level.dataset.level;
+            if (levelNum === '1') label.textContent = 'Nutzen';
+            else if (levelNum === '2') label.textContent = 'Funktionen';
+            else if (levelNum === '3') label.textContent = 'Details';
+            level.appendChild(label);
+        });
+    }
+
+    handleLevelClick(event, level, index) {
+        // Nur reagieren wenn es ein Peek-Level ist
+        if (level.classList.contains('peek-left')) {
+            event.stopPropagation();
+            this.navigateToPeekLeft();
+        } else if (level.classList.contains('peek-right')) {
+            event.stopPropagation();
+            this.navigateToPeekRight();
+        }
+    }
+
+    navigateToPeekLeft() {
+        // Finde das peek-left Level und navigiere dorthin
+        const peekLeftLevel = document.querySelector('.tree-level.peek-left');
+        if (peekLeftLevel && this.history.length > 0) {
+            this.goBack();
+        }
+    }
+
+    navigateToPeekRight() {
+        // Kann nur navigieren wenn ein Node ausgewählt ist
+        // Dies wird durch Node-Klick gehandhabt
+    }
+
     handleNodeClick(event, node) {
-        // Wenn Leaf-Node, nichts tun (außer visuelles Feedback)
+        event.stopPropagation();
+
+        // Prüfen ob wir im aktiven Level sind
+        const parentLevel = node.closest('.tree-level');
+        if (!parentLevel.classList.contains('active')) {
+            return; // Klicks nur im aktiven Level verarbeiten
+        }
+
+        // Wenn Leaf-Node, nur visuelles Feedback
         if (node.classList.contains('leaf')) {
             this.animateLeafClick(node);
             return;
@@ -58,7 +127,7 @@ class FeatureTree {
 
             // Speichere aktuelle Position in History
             this.history.push({
-                levelIndex: this.currentLevel,
+                levelIndex: this.currentLevelIndex,
                 nodeId: nodeId,
                 label: nodeLabel
             });
@@ -75,35 +144,81 @@ class FeatureTree {
     }
 
     findChildLevel(parentId) {
-        // Suche Level mit data-parent="parentId"
         return document.querySelector(`.tree-level[data-parent="${parentId}"]`);
     }
 
-    navigateToLevel(levelIndex) {
-        // Berechne Translation für Slider
-        const translateX = -levelIndex * 100;
-        this.slider.style.transform = `translateX(${translateX}%)`;
-
-        // Deaktiviere altes Level
-        this.levels[this.currentLevel].classList.remove('active');
-
-        // Aktiviere neues Level nach kurzer Verzögerung für Animation
-        setTimeout(() => {
-            this.levels[levelIndex].classList.add('active');
-        }, 100);
-
-        this.currentLevel = levelIndex;
-
-        // Back-Button aktivieren wenn nicht auf erstem Level
+    showLevel(levelIndex) {
+        this.currentLevelIndex = levelIndex;
+        this.updateSliderPosition();
+        this.updateLevelStates();
         this.backBtn.disabled = this.history.length === 0;
     }
 
-    showLevel(levelIndex) {
-        // Initiale Anzeige ohne Animation
-        this.levels.forEach((level, idx) => {
-            level.classList.toggle('active', idx === levelIndex);
+    navigateToLevel(levelIndex) {
+        this.currentLevelIndex = levelIndex;
+        this.updateSliderPosition();
+
+        // Kurze Verzögerung für Animation
+        setTimeout(() => {
+            this.updateLevelStates();
+        }, 50);
+
+        this.backBtn.disabled = this.history.length === 0;
+    }
+
+    updateSliderPosition() {
+        // Berechne die Translation basierend auf Level-Breite
+        // Jedes Level ist 60% breit, wir wollen das aktive Level zentrieren
+        const translateX = -(this.currentLevelIndex * this.levelWidth);
+        this.slider.style.transform = `translateX(${translateX}%)`;
+    }
+
+    updateLevelStates() {
+        // Entferne alle State-Klassen
+        this.levels.forEach(level => {
+            level.classList.remove('active', 'peek-left', 'peek-right', 'hidden');
         });
-        this.currentLevel = levelIndex;
+
+        // Setze States basierend auf aktuellem Level
+        this.levels.forEach((level, index) => {
+            if (index === this.currentLevelIndex) {
+                level.classList.add('active');
+            } else if (this.isAdjacentLevel(index, 'left')) {
+                level.classList.add('peek-left');
+            } else if (this.isAdjacentLevel(index, 'right')) {
+                level.classList.add('peek-right');
+            } else {
+                level.classList.add('hidden');
+            }
+        });
+    }
+
+    isAdjacentLevel(levelIndex, direction) {
+        const currentLevel = this.levels[this.currentLevelIndex];
+        const targetLevel = this.levels[levelIndex];
+
+        if (!currentLevel || !targetLevel) return false;
+
+        if (direction === 'left') {
+            // Peek-Left: Das vorherige Level in der History
+            if (this.history.length === 0) return false;
+            const previousHistoryItem = this.history[this.history.length - 1];
+            return levelIndex === previousHistoryItem.levelIndex;
+        }
+
+        if (direction === 'right') {
+            // Peek-Right: Levels die Kinder des aktuellen Levels sein könnten
+            // Zeige das erste mögliche Child-Level
+            const currentNodes = currentLevel.querySelectorAll('.tree-node:not(.leaf)');
+            for (const node of currentNodes) {
+                const childLevel = this.findChildLevel(node.dataset.id);
+                if (childLevel && Array.from(this.levels).indexOf(childLevel) === levelIndex) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     goBack() {
@@ -174,30 +289,24 @@ class FeatureTree {
     }
 
     navigateToCrumb(crumbIndex) {
-        // crumbIndex 0 = erstes Item in History (nach Nutzen)
-        // Wir müssen zu diesem Punkt navigieren
-
-        if (crumbIndex >= this.history.length - 1) return; // Bereits dort
+        if (crumbIndex >= this.history.length - 1) return;
 
         // Kürze History
         const targetHistory = this.history.slice(0, crumbIndex + 1);
         const targetItem = targetHistory[targetHistory.length - 1];
 
-        // Finde das Level, das zu diesem History-Item gehört
+        // Finde das Level
         const childLevel = this.findChildLevel(targetItem.nodeId);
         const targetIndex = childLevel ? Array.from(this.levels).indexOf(childLevel) : 0;
 
-        // Update History
+        // Update
         this.history = targetHistory;
-
-        // Navigiere
         this.navigateToLevel(targetIndex);
         this.clearSelection();
         this.updateBreadcrumb();
     }
 
     animateLeafClick(node) {
-        // Visuelles Feedback für Leaf-Nodes
         const content = node.querySelector('.node-content');
         content.style.transform = 'scale(0.98)';
 
@@ -205,7 +314,7 @@ class FeatureTree {
             content.style.transform = '';
         }, 150);
 
-        // Optional: Custom Event für externe Verwendung
+        // Custom Event
         const event = new CustomEvent('leafSelected', {
             detail: {
                 id: node.dataset.id,
@@ -216,7 +325,6 @@ class FeatureTree {
         });
         document.dispatchEvent(event);
 
-        // Log für Demo
         console.log('Ausgewählt:', {
             path: [...this.history.map(h => h.label), node.querySelector('.node-headline').textContent].join(' → ')
         });
@@ -253,10 +361,9 @@ class SwipeHandler {
         const diffX = this.startX - endX;
         const diffY = Math.abs(this.startY - endY);
 
-        // Nur horizontale Swipes erkennen
         if (Math.abs(diffX) > this.threshold && diffY < 100) {
             if (diffX > 0) {
-                // Swipe left - nicht verwendet, Navigation erfolgt durch Klick
+                // Swipe left - nicht verwendet
             } else {
                 // Swipe right - zurück
                 this.onSwipeRight();
@@ -269,16 +376,15 @@ class SwipeHandler {
 document.addEventListener('DOMContentLoaded', () => {
     const tree = new FeatureTree();
 
-    // Swipe für mobile Navigation (zurück)
+    // Swipe für mobile Navigation
     new SwipeHandler(
         document.querySelector('.tree-viewport'),
-        () => {}, // Swipe left - nicht verwendet
-        () => tree.goBack() // Swipe right - zurück
+        () => {},
+        () => tree.goBack()
     );
 
-    // Event-Listener für Leaf-Auswahl (kann extern genutzt werden)
+    // Event-Listener für Leaf-Auswahl
     document.addEventListener('leafSelected', (e) => {
-        // Hier können weitere Aktionen bei Leaf-Auswahl durchgeführt werden
-        // z.B. Modal öffnen, Details anzeigen, etc.
+        // Hier können weitere Aktionen durchgeführt werden
     });
 });

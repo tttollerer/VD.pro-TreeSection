@@ -10,13 +10,14 @@ body {
     background: #ffffff);
     min-height: 100vh;
     color: #1e293b;
+    overflow-x: hidden;
 }
 
 /* Tree Section Container */
 .tree-section {
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 30px 0;
 }
 
 /* Navigation Header */
@@ -24,7 +25,7 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-bottom: 40px;
+    margin: 0 40px 30px;
     padding: 16px 24px;
     background: white;
     border-radius: 16px;
@@ -88,38 +89,125 @@ body {
     font-size: 0.8rem;
 }
 
-/* Tree Viewport */
+/* Tree Viewport - zeigt 3 Spalten */
 .tree-viewport {
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
+    padding: 20px 0;
 }
 
-/* Tree Slider - für horizontales Swipen zwischen Levels */
+/* Tree Slider - Flex Container für alle Levels */
 .tree-slider {
     display: flex;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Start-Position: erstes Level zentriert, aber mit Platz für Peek */
+    padding-left: 5%;
 }
 
-/* Einzelne Tree Levels */
+/* Einzelne Tree Levels - drei sichtbar nebeneinander */
 .tree-level {
-    flex: 0 0 100%;
-    min-width: 100%;
+    flex: 0 0 60%;
+    min-width: 60%;
     position: relative;
-    padding: 40px 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
+    padding: 30px 20px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.4;
+    transform: scale(0.9);
+    filter: blur(2px);
+    cursor: pointer;
 }
 
+/* Aktives Level in der Mitte */
 .tree-level.active {
     opacity: 1;
-    pointer-events: auto;
+    transform: scale(1);
+    filter: blur(0);
+    cursor: default;
+}
+
+/* Peek-Levels (links und rechts vom aktiven) */
+.tree-level.peek-left,
+.tree-level.peek-right {
+    opacity: 0.6;
+    transform: scale(0.92);
+    filter: blur(0);
+    cursor: pointer;
+}
+
+.tree-level.peek-left:hover,
+.tree-level.peek-right:hover {
+    opacity: 0.8;
+    transform: scale(0.94);
+}
+
+/* Versteckte Levels */
+.tree-level.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Level-Label für Peek-Ansicht */
+.level-label {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tree-level.peek-left .level-label,
+.tree-level.peek-right .level-label {
+    opacity: 1;
+}
+
+/* Click-Overlay für Peek-Levels */
+.peek-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    border-radius: 20px;
+}
+
+.tree-level.peek-left:hover .peek-overlay,
+.tree-level.peek-right:hover .peek-overlay {
+    opacity: 1;
+}
+
+.peek-overlay i {
+    font-size: 2rem;
+    color: #0ea5e9;
+    background: white;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
 }
 
 /* Level Header für Kontext */
 .level-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .parent-label {
@@ -128,17 +216,40 @@ body {
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
     color: white;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     border-radius: 30px;
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+/* Stufen-Indikator */
+.level-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.level-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    transition: all 0.3s ease;
+}
+
+.level-dot.active {
+    width: 30px;
+    border-radius: 5px;
+    background: #0ea5e9;
 }
 
 /* Zentraler Baum-Stamm */
 .tree-trunk {
     position: absolute;
     left: 50%;
-    top: 0;
-    bottom: 0;
+    top: 60px;
+    bottom: 20px;
     width: 6px;
     background: linear-gradient(180deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
     transform: translateX(-50%);
@@ -149,32 +260,38 @@ body {
 .tree-trunk::before {
     content: '';
     position: absolute;
-    top: -20px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     background: #22c55e;
     border-radius: 50%;
     box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
 }
 
+/* Tree Nodes Container */
+.tree-nodes {
+    position: relative;
+    z-index: 2;
+}
+
 /* Tree Nodes */
 .tree-node {
     position: relative;
-    width: calc(50% - 60px);
-    margin-bottom: 30px;
+    width: calc(50% - 50px);
+    margin-bottom: 25px;
     z-index: 2;
 }
 
 .tree-node.left {
-    margin-left: 20px;
+    margin-left: 15px;
     margin-right: auto;
 }
 
 .tree-node.right {
     margin-left: auto;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 /* Verbindungslinie vom Stamm zum Node */
@@ -188,23 +305,23 @@ body {
 }
 
 .tree-node.left .node-branch {
-    right: -40px;
-    width: 40px;
+    right: -35px;
+    width: 35px;
 }
 
 .tree-node.right .node-branch {
-    left: -40px;
-    width: 40px;
+    left: -35px;
+    width: 35px;
 }
 
 /* Connector-Punkt am Stamm */
 .node-connector {
     position: absolute;
     top: 50%;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     background: white;
-    border: 4px solid #22c55e;
+    border: 3px solid #22c55e;
     border-radius: 50%;
     transform: translateY(-50%);
     z-index: 3;
@@ -212,21 +329,21 @@ body {
 }
 
 .tree-node.left .node-connector {
-    right: -48px;
+    right: -42px;
 }
 
 .tree-node.right .node-connector {
-    left: -48px;
+    left: -42px;
 }
 
 /* Node Content Card */
 .node-content {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding: 24px;
+    gap: 14px;
+    padding: 20px;
     background: white;
-    border-radius: 16px;
+    border-radius: 14px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -238,8 +355,8 @@ body {
     text-align: right;
 }
 
-.node-content:hover {
-    transform: translateY(-4px);
+.tree-level.active .node-content:hover {
+    transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     border-color: #0ea5e9;
 }
@@ -248,22 +365,22 @@ body {
     cursor: default;
 }
 
-.tree-node.leaf .node-content:hover {
+.tree-level.active .tree-node.leaf .node-content:hover {
     border-color: #22c55e;
 }
 
 /* Node Icon */
 .node-icon {
     flex-shrink: 0;
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    border-radius: 14px;
+    border-radius: 12px;
     color: white;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }
 
@@ -279,18 +396,18 @@ body {
 }
 
 .node-headline {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #1e293b;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     line-height: 1.3;
 }
 
 .node-subheadline {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #0ea5e9;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .tree-node.leaf .node-subheadline {
@@ -298,35 +415,35 @@ body {
 }
 
 .node-description {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #64748b;
     line-height: 1.5;
 }
 
-/* Node Arrow (für nicht-leaf nodes) */
+/* Node Arrow */
 .node-arrow {
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: #f1f5f9;
     border-radius: 50%;
     color: #64748b;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.3s ease;
     align-self: center;
 }
 
-.node-content:hover .node-arrow {
+.tree-level.active .node-content:hover .node-arrow {
     background: #0ea5e9;
     color: white;
-    transform: translateX(4px);
+    transform: translateX(3px);
 }
 
-.tree-node.right .node-content:hover .node-arrow {
-    transform: translateX(-4px);
+.tree-node.right .tree-level.active .node-content:hover .node-arrow {
+    transform: translateX(-3px);
 }
 
 .tree-node.leaf .node-arrow {
@@ -336,37 +453,30 @@ body {
 /* Animationen für Nodes */
 .tree-node {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
 }
 
 .tree-level.active .tree-node {
-    animation: nodeAppear 0.5s ease forwards;
+    animation: nodeAppear 0.4s ease forwards;
 }
 
+.tree-level.active .tree-node:nth-child(1) { animation-delay: 0.05s; }
 .tree-level.active .tree-node:nth-child(2) { animation-delay: 0.1s; }
-.tree-level.active .tree-node:nth-child(3) { animation-delay: 0.2s; }
-.tree-level.active .tree-node:nth-child(4) { animation-delay: 0.3s; }
-.tree-level.active .tree-node:nth-child(5) { animation-delay: 0.4s; }
+.tree-level.active .tree-node:nth-child(3) { animation-delay: 0.15s; }
+.tree-level.active .tree-node:nth-child(4) { animation-delay: 0.2s; }
+
+/* Peek-Levels zeigen Nodes ohne Animation */
+.tree-level.peek-left .tree-node,
+.tree-level.peek-right .tree-node {
+    opacity: 1;
+    transform: translateY(0);
+    animation: none;
+}
 
 @keyframes nodeAppear {
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* Trunk Animation */
-.tree-trunk {
-    transform-origin: top center;
-    animation: trunkGrow 0.8s ease forwards;
-}
-
-@keyframes trunkGrow {
-    from {
-        transform: translateX(-50%) scaleY(0);
-    }
-    to {
-        transform: translateX(-50%) scaleY(1);
     }
 }
 
@@ -382,63 +492,106 @@ body {
     transform: translateY(-50%) scale(1.2);
 }
 
+/* Navigation Arrows an den Seiten */
+.nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-arrow.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.nav-arrow:hover {
+    background: #0ea5e9;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-arrow.left {
+    left: 20px;
+}
+
+.nav-arrow.right {
+    right: 20px;
+}
+
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .tree-level {
+        flex: 0 0 70%;
+        min-width: 70%;
+    }
+
+    .tree-slider {
+        padding-left: 3%;
+    }
+}
+
 @media (max-width: 900px) {
+    .tree-level {
+        flex: 0 0 85%;
+        min-width: 85%;
+    }
+
+    .tree-slider {
+        padding-left: 2%;
+    }
+
     .tree-node {
-        width: calc(50% - 40px);
-    }
-
-    .tree-node.left {
-        margin-left: 10px;
-    }
-
-    .tree-node.right {
-        margin-right: 10px;
-    }
-
-    .tree-node.left .node-branch {
-        right: -30px;
-        width: 30px;
-    }
-
-    .tree-node.right .node-branch {
-        left: -30px;
-        width: 30px;
-    }
-
-    .tree-node.left .node-connector {
-        right: -38px;
-    }
-
-    .tree-node.right .node-connector {
-        left: -38px;
+        width: calc(50% - 35px);
     }
 
     .node-content {
-        padding: 18px;
+        padding: 16px;
         gap: 12px;
     }
 
     .node-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 1.2rem;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
     }
 
     .node-headline {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .node-description {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+    }
+
+    .nav-arrow {
+        width: 40px;
+        height: 40px;
     }
 }
 
 @media (max-width: 700px) {
-    .tree-trunk {
-        display: none;
+    .tree-level {
+        flex: 0 0 92%;
+        min-width: 92%;
     }
 
+    .tree-trunk,
     .node-branch,
     .node-connector {
         display: none;
@@ -450,7 +603,7 @@ body {
         width: 100%;
         margin-left: 0;
         margin-right: 0;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .tree-node.right .node-content {
@@ -458,23 +611,24 @@ body {
         text-align: left;
     }
 
-    .tree-node.right .node-content:hover .node-arrow {
-        transform: translateX(4px);
-    }
-
     .tree-nav {
+        margin: 0 15px 20px;
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
+
+    .nav-arrow {
+        display: none;
+    }
 }
 
 /* Hover-Effekte für die Zweige */
-.tree-node:hover .node-branch {
+.tree-level.active .tree-node:hover .node-branch {
     background: linear-gradient(90deg, #0ea5e9, #38bdf8);
 }
 
-.tree-node:hover .node-connector {
+.tree-level.active .tree-node:hover .node-connector {
     border-color: #0ea5e9;
     box-shadow: 0 2px 12px rgba(14, 165, 233, 0.4);
 }
@@ -484,13 +638,13 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Focus States für Accessibility */
+/* Focus States */
 .node-content:focus-visible {
     outline: 3px solid #0ea5e9;
     outline-offset: 2px;
 }
 
-.nav-back:focus-visible {
-    outline: 3px solid #0ea5e9;
-    outline-offset: 2px;
+/* Level Transition beim Wechsel */
+.tree-level {
+    will-change: transform, opacity;
 }
