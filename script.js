@@ -30,22 +30,26 @@ class FeatureTree {
         // Zeige erstes Level
         this.showLevel(0);
 
-        // Event-Listener für Node-Klicks
-        document.querySelectorAll('.tree-node').forEach(node => {
+        // Event-Listener für ALLE Node-Contents
+        const allNodes = document.querySelectorAll('.tree-node');
+        console.log(`Found ${allNodes.length} tree nodes`);
+
+        allNodes.forEach((node, idx) => {
             const content = node.querySelector('.node-content');
             if (content) {
                 // Klick-Handler
                 content.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    e.preventDefault();
                     this.handleNodeClick(e, node);
                 });
 
                 // Hover-Handler für Peek-Vorschau
-                content.addEventListener('mouseenter', () => {
+                content.addEventListener('mouseenter', (e) => {
                     this.handleNodeHover(node);
                 });
 
-                content.addEventListener('mouseleave', () => {
+                content.addEventListener('mouseleave', (e) => {
                     this.handleNodeHoverEnd(node);
                 });
             }
@@ -56,7 +60,7 @@ class FeatureTree {
             overlay.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const level = overlay.closest('.tree-level');
-                if (level.classList.contains('peek-left')) {
+                if (level && level.classList.contains('peek-left')) {
                     this.goBack();
                 }
             });
@@ -81,6 +85,9 @@ class FeatureTree {
 
     addPeekOverlays() {
         this.levels.forEach(level => {
+            // Prüfen ob schon ein Overlay existiert
+            if (level.querySelector('.peek-overlay')) return;
+
             const overlay = document.createElement('div');
             overlay.className = 'peek-overlay';
             overlay.innerHTML = '<i class="fas fa-hand-pointer"></i>';
@@ -97,31 +104,35 @@ class FeatureTree {
     }
 
     handleNodeHover(node) {
+        // Prüfen ob Node im aktiven Level ist
         const parentLevel = node.closest('.tree-level');
-        if (!parentLevel || !parentLevel.classList.contains('active')) return;
+        if (!parentLevel) return;
+        if (!parentLevel.classList.contains('active')) return;
         if (node.classList.contains('leaf')) return;
 
         const nodeId = node.dataset.id;
+        if (!nodeId) return;
+
         const childLevel = this.findChildLevel(nodeId);
 
         if (childLevel) {
             const childIndex = Array.from(this.levels).indexOf(childLevel);
-            this.previewChildIndex = childIndex;
-            this.updateLevelStates();
+            if (childIndex !== -1) {
+                this.previewChildIndex = childIndex;
+                this.updateLevelStates();
+            }
         }
     }
 
     handleNodeHoverEnd(node) {
-        // Reset preview wenn nicht mehr über einem Node
         this.previewChildIndex = null;
         this.updateLevelStates();
     }
 
     handleNodeClick(event, node) {
         const parentLevel = node.closest('.tree-level');
-        if (!parentLevel || !parentLevel.classList.contains('active')) {
-            return;
-        }
+        if (!parentLevel) return;
+        if (!parentLevel.classList.contains('active')) return;
 
         if (node.classList.contains('leaf')) {
             this.animateLeafClick(node);
@@ -129,6 +140,8 @@ class FeatureTree {
         }
 
         const nodeId = node.dataset.id;
+        if (!nodeId) return;
+
         const nodeLabel = node.querySelector('.node-headline')?.textContent || '';
         const childLevel = this.findChildLevel(nodeId);
 
@@ -143,13 +156,14 @@ class FeatureTree {
             });
 
             const childIndex = Array.from(this.levels).indexOf(childLevel);
-            this.previewChildIndex = null; // Reset preview
+            this.previewChildIndex = null;
             this.navigateToLevel(childIndex);
             this.updateBreadcrumb();
         }
     }
 
     findChildLevel(parentId) {
+        if (!parentId) return null;
         return document.querySelector(`.tree-level[data-parent="${parentId}"]`);
     }
 
@@ -173,13 +187,13 @@ class FeatureTree {
     }
 
     updateLevelStates() {
-        // Finde das peek-left Level (vorheriges aus History)
+        // peek-left: das vorherige Level aus der History
         let peekLeftIndex = null;
         if (this.history.length > 0) {
             peekLeftIndex = this.history[this.history.length - 1].levelIndex;
         }
 
-        // peek-right ist nur das Level, über dessen Node wir gerade hovern
+        // peek-right: das Level über dessen Node wir hovern
         const peekRightIndex = this.previewChildIndex;
 
         this.levels.forEach((level, index) => {
@@ -267,13 +281,16 @@ class FeatureTree {
 
     animateLeafClick(node) {
         const content = node.querySelector('.node-content');
-        content.style.transform = 'scale(0.98)';
-        setTimeout(() => {
-            content.style.transform = '';
-        }, 150);
+        if (content) {
+            content.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                content.style.transform = '';
+            }, 150);
+        }
 
+        const headline = node.querySelector('.node-headline');
         console.log('Ausgewählt:', {
-            path: [...this.history.map(h => h.label), node.querySelector('.node-headline').textContent].join(' → ')
+            path: [...this.history.map(h => h.label), headline?.textContent || ''].join(' → ')
         });
     }
 }
@@ -306,8 +323,8 @@ class SwipeHandler {
     }
 }
 
-// Initialize
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    const tree = new FeatureTree();
-    new SwipeHandler(document.querySelector('.tree-viewport'), () => tree.goBack());
+    window.featureTree = new FeatureTree();
+    new SwipeHandler(document.querySelector('.tree-viewport'), () => window.featureTree.goBack());
 });

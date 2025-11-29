@@ -165,10 +165,10 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -177,14 +177,22 @@ body {
     cursor: pointer;
 }
 
+/* Overlay nur bei peek-Levels anzeigen */
 .tree-level.peek-left .peek-overlay,
 .tree-level.peek-right .peek-overlay {
+    display: flex;
     pointer-events: auto;
 }
 
 .tree-level.peek-left:hover .peek-overlay,
 .tree-level.peek-right:hover .peek-overlay {
     opacity: 1;
+}
+
+/* Aktives Level - Overlay komplett versteckt */
+.tree-level.active .peek-overlay {
+    display: none !important;
+    pointer-events: none !important;
 }
 
 .peek-overlay i {
