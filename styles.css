@@ -1,0 +1,330 @@
+/* Reset und Basis-Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #fff;
+}
+
+/* Container */
+.tree-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tree-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    color: #e94560;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* Tree Wrapper - Horizontale Anordnung der Levels */
+.tree-wrapper {
+    display: flex;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+/* Einzelne Level-Spalten */
+.tree-level {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.3;
+    transform: translateX(20px);
+    pointer-events: none;
+}
+
+.tree-level.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.tree-level.preview {
+    opacity: 0.5;
+    transform: translateX(10px);
+}
+
+/* Level Header */
+.level-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #e94560;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(233, 69, 96, 0.3);
+    font-weight: 600;
+}
+
+/* Tree Items Container */
+.tree-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Einzelne Tree Items */
+.tree-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.tree-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(233, 69, 96, 0.2) 0%, transparent 100%);
+    transition: width 0.3s ease;
+}
+
+.tree-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(233, 69, 96, 0.3);
+    transform: translateX(5px);
+}
+
+.tree-item:hover::before {
+    width: 100%;
+}
+
+.tree-item.selected {
+    background: rgba(233, 69, 96, 0.2);
+    border-color: #e94560;
+}
+
+.tree-item.selected::before {
+    width: 100%;
+}
+
+/* Hidden Items */
+.tree-item.hidden {
+    display: none;
+}
+
+/* Item Icon */
+.item-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    filter: grayscale(0.3);
+    transition: filter 0.3s ease;
+}
+
+.tree-item:hover .item-icon,
+.tree-item.selected .item-icon {
+    filter: grayscale(0);
+}
+
+/* Item Text */
+.item-text {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Item Arrow */
+.item-arrow {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    font-weight: 300;
+}
+
+.tree-item:hover .item-arrow {
+    color: #e94560;
+    transform: translateX(3px);
+}
+
+.tree-item.selected .item-arrow {
+    color: #e94560;
+    transform: translateX(5px);
+}
+
+/* Leaf Items (keine Kinder) */
+.tree-item.leaf {
+    background: rgba(233, 69, 96, 0.05);
+}
+
+.tree-item.leaf:hover {
+    background: rgba(233, 69, 96, 0.15);
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb-item.active {
+    color: #e94560;
+    font-weight: 500;
+}
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.8rem;
+}
+
+/* Animationen */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.tree-item.animate-in {
+    animation: slideIn 0.3s ease forwards;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .tree-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .tree-level {
+        flex: none;
+        max-width: 100%;
+        transform: translateY(20px);
+    }
+
+    .tree-level.active {
+        transform: translateY(0);
+    }
+
+    .tree-level.preview {
+        transform: translateY(10px);
+    }
+
+    .tree-level:not(.active):not(.preview) {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .tree-title {
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+    }
+
+    .tree-item {
+        padding: 12px 14px;
+    }
+
+    .item-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Verbindungslinien zwischen Levels (optional visuell) */
+.tree-level::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    width: 24px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(233, 69, 96, 0.5) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tree-level.active::after {
+    opacity: 1;
+}
+
+.tree-level:last-child::after {
+    display: none;
+}
+
+/* Scroll-Indikator für lange Listen */
+.tree-items {
+    max-height: 350px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(233, 69, 96, 0.5) transparent;
+}
+
+.tree-items::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tree-items::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tree-items::-webkit-scrollbar-thumb {
+    background: rgba(233, 69, 96, 0.5);
+    border-radius: 3px;
+}
+
+.tree-items::-webkit-scrollbar-thumb:hover {
+    background: rgba(233, 69, 96, 0.7);
+}
